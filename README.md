@@ -108,3 +108,7 @@ Banana:
 In this example our syntax is broken to this `Banana.Calories.Fat: 0.3` which is not the desired output. It also may trigger an syntax error because "Calories" has already a value assigned and it can't be a dictionary as well.
 
 Please remember that the order of properties in a dictionary doesn't really matter as log as it's correctly formatted. It does matter in an array. 
+
+### Laboratory 1
+It's based on multiple choise questions and correcting some broken yaml. 
+
