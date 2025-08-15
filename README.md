@@ -152,6 +152,8 @@ web ansible_host=server3.domain.lcl ansible_connection=ssh ansible_port=22 ansib
 db  ansible_host=server4.domain.lcl ansible_connection=winrm ansible_port=5985 ansible_user=srv_ansibile  ansible_password=dontdothat
 ```
 
+We saw so far that the inventory can be written in `ini` format, but it can also be written in yaml as well. The yaml format as way better for larger scale projects. 
+
 ### Laboratory 2
 Example of inventory created during the lab
 
