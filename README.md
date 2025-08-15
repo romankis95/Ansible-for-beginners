@@ -35,7 +35,7 @@ When you install ansible, it creates a defaulc configuration file at `/etc/ansib
 An ansible configuration file is divided in several sections. For example the `[default]` section focus on there the inventory, the logs, library, roles etc are stored. 
 For example if you run `cat ansible.cfg` you should get something like this:
 
-```
+```ini
 [defaults]
 inventory      = inventories/static/hosts.ini   
 roles_path     = ./roles
@@ -72,6 +72,7 @@ Using `ansible-config dump` you can see a comprehensive settings of current conf
 
 All ansible files are written in yaml. Yaml separates key:value data. Remember you need to have a colon followed by a space between key and value, eg: `fruit: Apple`.
 **Arrays** are rappresentented in the folloing way:
+
 ```yaml
 Fruits:
 - Orange
@@ -82,6 +83,7 @@ Vegetables:
 - Carrot
 - Tomato
 ```
+
 How about a **dictionary**:
 
 ```yaml
@@ -111,4 +113,51 @@ Please remember that the order of properties in a dictionary doesn't really matt
 
 ### Laboratory 1
 It's based on multiple choise questions and correcting some broken yaml. 
+
+### Ansibe Intenvory
+
+Ansible can work with or multiple systems in out infrastructure at the same time. In order to work with multiple servers, ansible needs to establish connectivity with those servers. This is done using ssh for linux or powershell remoting (winrm)for windows, these 2 methods are the reason why ansible is defined **agent-less**. 
+Ansible needs some information about the hosts it has to connect to, thats the reason we have to create an inventory file.
+By default ansible creats an inventory file located at `/etc/ansible/hosts` in **ini** format. 
+For example:
+
+```ini
+[all]
+server1.domain.lcl
+server2.domain.lcl
+server3.domain.lcl
+server4.domain.lcl
+server5.domain.lcl
+server7.domain.lcl
+
+[mail]
+server3.domain.lcl
+server4.domain.lcl
+
+[db]
+server5.domain.lcl
+server7.domain.lcl
+```
+We can also extend this notation by assigning aliases to the servers, for example:
+
+```ini
+web ansible_host=server3.domain.lcl
+db  ansible_host=server4.domain.lcl
+```
+
+We could extend further the inventory file by providing additional information:
+
+```ini
+web ansible_host=server3.domain.lcl ansible_connection=ssh ansible_port=22 ansible_user=srv_ansibile ansible_ssh_pass=dontdothat
+db  ansible_host=server4.domain.lcl ansible_connection=winrm ansible_port=5985 ansible_user=srv_ansibile
+```
+
+
+
+
+
+
+
+
+
 
