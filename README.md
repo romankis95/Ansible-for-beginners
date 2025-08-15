@@ -193,7 +193,56 @@ max_connections: 1000
 delete: false
 ```
 
+If you define variables at host level and a group level in inventory files, the ones at host level wins.
 
+```ini
+# Web Servers
+web1 ansible_host=server1.company.com  
+web2 ansible_host=server2.company.com ansible_connection=ssh ansible_user=root 
+web3 ansible_host=server3.company.com 
 
+[web_servers]
+web1
+web2
+web3
+
+[web_servers:vars]
+ansible_connection=winrm
+ansible_user=administrator
+```
+For the host `web2` the user will be root and the connection type ssh.
+
+But, whathever i define at playbook level wins over host level variables. 
+Once again if i run a playbook using cli and i pass the `extra-vars` argument. That variable wins over playbook level. 
+
+```bash
+$ ansible-playbook playbook.yml --extra-vars "ansible_user=pippo"
+```
+These ones are the most important. Please refer to the offical documentation for more information.
+
+When creating a playbook with multiple tasks and onee task depeends on the output of the above one just use the argument `register: variable_name`. Now we can use variable_name in the tasks below. Please not that every register value depends on the module used. 
+
+If we run a playbook that makes a cat of /etc/hosts file we need to parse the output first.
+
+```yml
+---
+- name: get hosts
+  hosts: all
+  tasks:
+  - shell: cat /etc/hosts
+    register: result
+  - debug: 
+      var: result.stdout
+```
+What happens if a host wants to access variables defined for another host? Welp, it can't. But we can bypass this issue while writing a playbook using a magic variable, such as:
+
+```yml
+---
+- name: get hosts
+  hosts: all
+  tasks:
+  - debug: 
+      msg: "{{hostvars['web2'].ansible_user}}"
+```
 
 
