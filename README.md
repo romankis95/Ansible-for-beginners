@@ -181,12 +181,17 @@ db_servers
 
 ```
 
+### Ansible variables
 
+Variables same as in any other programming languages stores information. We already saw some variables before in the inventory files, e.g. `ansible_connection`. To use defined variables just enclose them in `{{variable_name}}`. You can have variables directly embedded inside a playbook, or inside inventory file or even better in a dedicated host file called hostname.yml in the same directory as the playbook. 
 
+Variables can be **strings** , **numbers** , **booleans** , **lists** or **dictionaries**
 
-
-
-
+```yml
+username: "admin"
+max_connections: 1000
+delete: false
+```
 
 
 
