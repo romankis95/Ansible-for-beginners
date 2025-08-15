@@ -245,4 +245,44 @@ What happens if a host wants to access variables defined for another host? Welp,
       msg: "{{hostvars['web2'].ansible_user}}"
 ```
 
+### Ansible Facts
 
+When we run a playbook and when ansible connects to a machine it first gathers some information regarding the host, such as architecture, network connectivity, interfaces, ips, mounts, volumes etc.
+
+These information are known as `facts`.
+
+These facts are collected using the `setup module`. This module is run automatically by ansible when you run a playbook even if not explicitly declared in the module. The following playbook runs 2 tasks and not one. The first one is silent and gather facts about the hosts. The second one execute the message. 
+
+```yml
+---
+- name: Print hello world
+  hosts: all
+  tasks:
+  - debug: 
+      msg: Hello world
+```
+
+All facts gathered by ansible are stored in a variable called `ansible_facts`. If we wanted to, we could see the content of that variable with the following playbook.
+
+```yml
+---
+- name: Print hello world
+  hosts: all
+  tasks:
+  - debug: 
+      var: ansible_facts
+```
+
+If we don't want to gather facts we need to declare it explicitly in the playbook with the property `gather_facts: no`.
+
+```yml
+---
+- name: Print hello world
+  hosts: all
+  gather_facts: no
+  tasks:
+  - debug: 
+      var: ansible_facts
+```
+
+You can globally define this property inside an ansible config file. 
