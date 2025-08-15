@@ -68,4 +68,43 @@ If you run something like `$ ANSIBLE_GATHERING=explicit ansible-playbook playboo
 You can run `$ ansible-config list` to view all the config files that are taken in accounts,  or run `$ ansible-config view` to see which config file is currently active. 
 Using `ansible-config dump` you can see a comprehensive settings of current config and where ansible picks that from. 
 
+### Ansible playbooks and yaml
 
+All ansible files are written in yaml. Yaml separates key:value data. Remember you need to have a colon followed by a space between key and value, eg: `fruit: Apple`.
+**Arrays** are rappresentented in the folloing way:
+```yaml
+Fruits:
+- Orange
+- Banana
+- Apple
+
+Vegetables:
+- Carrot
+- Tomato
+```
+How about a **dictionary**:
+
+```yaml
+Banana:
+    Calories: 62
+    Fat: 0.3
+    Carbs: 16
+
+Grape:
+    Calories: 42
+    Fat: 0.1
+    Carbs: 11     
+```
+
+The **dictionary** has to have an equal namber of spaces at the beginning of the property. In this example it's like we had the following syntax: `Banana.Calories: 62` or `Banana.Fat: 0.3`. What if we mismatch some spaces?
+
+```yaml
+Banana:
+    Calories: 62
+     Fat: 0.3
+     Carbs: 16
+```
+
+In this example our syntax is broken to this `Banana.Calories.Fat: 0.3` which is not the desired output. It also may trigger an syntax error because "Calories" has already a value assigned and it can't be a dictionary as well.
+
+Please remember that the order of properties in a dictionary doesn't really matter as log as it's correctly formatted. It does matter in an array. 
