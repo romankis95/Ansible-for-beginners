@@ -392,12 +392,29 @@ What happens if we split the tasks in 2 different plays in the same file?
         name: httpd
         state: started 
 ```
+
 The single `-` denotes that a playbook is a list of dictionaries. Each play is a dictionary. A task, on the contrary, is a list. You cant swap a task position with another task. Remember: a dictionary is an unordered collection, while a list is an ordered one. 
 If you wanted to run the playbook on something different than localhost, you should first define that host in the inventory file, same goes for connections and other variables. If you play the playbook for `hosts: all` it will run on every host defined in the inventory file. 
 
 The different actions done by the playbook are done through `modules`; in the previous playbook we used `command | script | yum | service` modules.
 
 When you finally built your first ansible playbook, execute it using `$ ansible-playbook playbook.yml` command. 
+
+### Verifying an Ansible playbook
+
+Lets say that you need to verify that your playbook works accordingly before using it on production servers. Ansible provides several modes to verify playbooks: `check` mode and `diff` mode.
+
+The check mode is a dry run; ansible runs the playbook without modifying anything on the machine. It allows the user to see the changes that will be made without applying them. To run the playbook in this mode you can append `--check` to the ansible playbook command. 
+For example `$ ansible-playbook install_nginx.yml --check`.
+
+Another mode is the diff mode.  It shows the before and after comparison of playbook changes. To run the playbook in this mode you can append `--diff` to the ansible playbook command. 
+For example `$ ansible-playbook install_nginx.yml --diff`. You can also run diff and check together. 
+
+We also have a syntax check mode. This mode checks if a playbook is syntax error free. To run the playbook in this mode you can append `--syntax-check` to the ansible playbook command. 
+For example `$ ansible-playbook install_nginx.yml --syntax-check`. 
+
+There is also `$ ansible-lint` that checks your playbooks for bugs, errors, suspicious constructions and helps you to maintain consistency quality beetween your plays. 
+
 
 
 
