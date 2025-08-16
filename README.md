@@ -415,6 +415,92 @@ For example `$ ansible-playbook install_nginx.yml --syntax-check`.
 
 There is also `$ ansible-lint` that checks your playbooks for bugs, errors, suspicious constructions and helps you to maintain consistency quality beetween your plays. 
 
+Laboratory 4
+How many playbooks are in the following yaml? How many tasks the Setup apache playbook has?
+```yml
+---
+- name: Setup apache
+  hosts: webserver
+  tasks:
+    - name: install httpd
+      yum:
+        name: httpd
+        state: installed
+    - name: Start service
+      service:
+        name: httpd
+        state: started
 
+- name: Setup tomcat
+  hosts: appserver
+  tasks:
+    - name: install httpd
+      yum:
+        name: tomcat
+        state: installed
+    - name: Start service
+      service:
+        name: tomcat
+        state: started
+```
+How to run this playbook in check mode?
 
+```yml
+- hosts: all
+  tasks:
+    - name: Install a new package
+      apt:
+        name: new_package
+        state: present
+
+    - name: Update the service
+      service:
+        name: my_service
+        state: restarted
+
+    - name: Check service status
+      service:
+        name: my_service
+        state: started
+```
+
+How to run this playbook in diff mode? And how to run it in syntax-check mode?
+
+```yml
+- hosts: all
+  tasks:
+    - name: Set max connections
+      lineinfile:
+        path: /etc/postgresql/12/main/postgresql.conf
+        line: 'max_connections = 500'
+
+    - name: Set listen addresses
+      lineinfile:
+        path: /etc/postgresql/12/main/postgresql.conf
+        line: 'listen_addresses = "*"'
+```
+
+How to run ansible lint on this playbook? What are the erros shows after running the linter?
+
+```yml
+- name: Database Setup Playbook
+  hosts: db_servers
+  tasks:
+    - name: Ensure PostgreSQL is installed
+      apt:
+        name: postgresql
+        state: latest
+        update_cache: yes
+
+    - name: Start PostgreSQL service
+      service:
+        name: postgresql
+        state: started
+
+    - copy:
+        src: /path/to/pg_hba.conf
+        dest: /etc/postgresql/12/main/pg_hba.conf
+      notify:
+        - Restart PostgreSQL
+```
 
