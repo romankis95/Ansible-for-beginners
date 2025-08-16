@@ -286,3 +286,51 @@ If we don't want to gather facts we need to declare it explicitly in the playboo
 ```
 
 You can globally define this property inside an ansible config file. 
+
+### Laboratory 3
+
+Variables from inventory file
+```yml
+---
+- name: 'Add nameserver in resolv.conf file on localhost'
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: 'Add nameserver in resolv.conf file'
+      lineinfile:
+        path: /tmp/resolv.conf
+        line: 'nameserver {{  nameserver_ip  }}'
+    - name: 'Disable SNMP Port'
+      firewalld:
+        port: '{{snmp_port}}'
+        permanent: true
+        state: disabled
+```
+Variables at playbook level
+```yml
+---
+- hosts: localhost
+  vars:
+    car_model: 'BMW M3'
+    country_name: USA
+    title: 'Systems Engineer'
+  tasks:
+    - command: 'echo "My car is {{ car_model }}"'
+    - command: 'echo "I live in the {{ country_name }}"'
+    - command: 'echo "I work as a {{ title }}"'
+```
+
+Working with dictionaries
+
+```yml
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: Set up user
+      user:
+        name: "{{user_details.username}}"
+        password: "{{user_details.password}}"
+        comment: "{{user_details.email}}"
+        state: present
+```
