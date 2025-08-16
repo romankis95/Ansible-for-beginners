@@ -334,3 +334,70 @@ Working with dictionaries
         comment: "{{user_details.email}}"
         state: present
 ```
+
+### Ansible Playbooks
+
+Plabooks are ansible's orchestartion language or better: playbooks do what we want ansible to do for us.
+It can be simple as rebooting some vms or complex as deploying 50 vm in cloud, provision them, install apps, update them etc.
+
+All playbooks are written in yaml language. A playbook is a set of tasks. Every task is an action that has to be performed on the host. Here is a simple playbook that we will analyze now:
+
+```yml
+---
+- name: Play 1
+  hosts: localhost
+  tasks:
+    - name: execute command date
+      command: date
+    - name: execute script on server
+      script: script1.sh
+    - name: install httpd service
+      yum:
+        name: httpd
+        state: present
+    - name: start webserver
+      service:
+        name: httpd
+        state: started 
+```
+
+The goal of this playbook is to run is to run a set of activities, one after another on the localhost. Please note that the host that we want to run the playbook on is defined at playlevel. 
+We can just edit `localhost` to anything present in the inventory file.
+
+Fist we print the date, then we run a script on localhost, after that we install the httpd package and finally we start the httpd service and check if the current service status is equal to started. 
+
+What happens if we split the tasks in 2 different plays in the same file?
+
+```yml
+---
+- 
+  name: Play 1
+  hosts: localhost
+  tasks:
+    - name: execute command date
+      command: date
+    - name: execute script on server
+      script: script1.sh
+
+- 
+  name: Play 2
+  hosts: localhost
+  tasks:
+    - name: install httpd service
+      yum:
+        name: httpd
+        state: present
+    - name: start webserver
+      service:
+        name: httpd
+        state: started 
+```
+The single `-` denotes that a playbook is a list of dictionaries. Each play is a dictionary. A task, on the contrary, is a list. You cant swap a task position with another task. Remember: a dictionary is an unordered collection, while a list is an ordered one. 
+If you wanted to run the playbook on something different than localhost, you should first define that host in the inventory file, same goes for connections and other variables. If you play the playbook for `hosts: all` it will run on every host defined in the inventory file. 
+
+The different actions done by the playbook are done through `modules`; in the previous playbook we used `command | script | yum | service` modules.
+
+When you finally built your first ansible playbook, execute it using `$ ansible-playbook playbook.yml` command. 
+
+
+
