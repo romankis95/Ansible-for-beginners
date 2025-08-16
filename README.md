@@ -506,4 +506,64 @@ How to run ansible lint on this playbook? What are the erros shows after running
       notify:
         - Restart PostgreSQL
 ```
+### Ansible Conditionals
 
+In this chapter we will look into conditionals. Let's start with a simple example:
+What if I had to install nginx on a debian machine and on a rhel one? As we know debian uses apt and rhel uses yum by default. 
+
+This means that we have to write 2 playbooks, or write a single playbook with a condition on the task to run:
+
+```yml
+- name: Install NGINX
+  hosts: all
+  tasks:
+    - name: Install nginx on debian
+      apt:
+        name: nginx
+        state: present
+      when: ansible_os_family == "Debian" and ansible_distibution_version == "16.04"
+    - name: Install nginx on rhel
+      yum:
+        name: nginx
+        state: present
+      when: ansible_os_family == "RedHat" or ansible_os_family == "SUSE"
+```
+
+When a condition is true that task will run. Make sure to use `==` when checking for a condition to be equal. You can append more conditions using `and` or `or` operators. We can also do conditions in loops. 
+
+```yml
+- name: Install Software
+  hosts: all
+  vars:
+    packages:
+      - name: nginx
+        required: True
+      - name: mysql
+        required: True
+      - name: apache
+        required: False
+  tasks:
+    - name: Install "{{item.name}}" on Debian
+      apt:
+        name: "{{item.name}}"
+        state: present
+      loop: "{{packages}}"
+      when: item.required == True
+```
+
+Another way to use conditionals is based on previous tasks results. Let's create a playbook that checks a service status and if its down, sends an email.
+
+```yml
+- name: Monitor and alert
+  hosts: node01
+  tasks:
+    - name: Check nginx
+      command: service nginx status
+      register: result
+    - name: Send email
+      mail:
+        to: a@a.com
+        subject: alert bla bla
+        body: service nginx is down
+        when: result.stdout.find('down') != -1
+```
