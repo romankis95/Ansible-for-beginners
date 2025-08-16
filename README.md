@@ -415,8 +415,10 @@ For example `$ ansible-playbook install_nginx.yml --syntax-check`.
 
 There is also `$ ansible-lint` that checks your playbooks for bugs, errors, suspicious constructions and helps you to maintain consistency quality beetween your plays. 
 
-Laboratory 4
+### Laboratory 4
+
 How many playbooks are in the following yaml? How many tasks the Setup apache playbook has?
+
 ```yml
 ---
 - name: Setup apache
@@ -443,6 +445,7 @@ How many playbooks are in the following yaml? How many tasks the Setup apache pl
         name: tomcat
         state: started
 ```
+
 How to run this playbook in check mode?
 
 ```yml
