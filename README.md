@@ -579,3 +579,16 @@ We can use ansible facts as variables in our conditional playbooks. For example 
       when: ansible.facts['os_family'] == 'Debian' and ansible_facts['distribution_major_version'] == '18'
 ```
 
+### Lavoratory 5
+
+```yml
+---
+- name: 'Add name server entry if not already entered'
+  hosts: localhost
+  become: yes
+  tasks:
+    - shell: 'cat /etc/resolv.conf'
+      register: result
+    - shell: 'echo "nameserver 10.0.250.10" >> /etc/resolv.conf'
+      when: result.stdout.find('10.0.250.10') == -1
+```      
