@@ -567,3 +567,15 @@ Another way to use conditionals is based on previous tasks results. Let's create
         body: service nginx is down
         when: result.stdout.find('down') != -1
 ```
+
+We can use ansible facts as variables in our conditional playbooks. For example if I needed to installa specific nginx package based on a distribution, I could gather facts and based on them write a condition like:
+
+```yml
+- name: Install nginx
+  hosts: all
+  tasks:
+    - name: nginx=1.18.0
+      state: present
+      when: ansible.facts['os_family'] == 'Debian' and ansible_facts['distribution_major_version'] == '18'
+```
+
