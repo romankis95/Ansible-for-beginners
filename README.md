@@ -591,4 +591,43 @@ We can use ansible facts as variables in our conditional playbooks. For example 
       register: result
     - shell: 'echo "nameserver 10.0.250.10" >> /etc/resolv.conf'
       when: result.stdout.find('10.0.250.10') == -1
-```      
+```
+
+### Ansible Loops
+
+Loops is a directive that executes the same task multiple times. Each time it runs it stores the value of each item in a loop variable.
+Let's loook at the following playbook to understand it better:
+
+```yml
+---
+- name: Create users
+  host: all
+  tasks:
+    - user: name="{{ item  }}" state: present
+      loop:
+        - joe
+        - nick
+        - tean
+        - mike
+        - paul
+```
+
+Another way to create loops is using the `with` keyword: 
+
+```yml
+---
+- name: Create users
+  host: all
+  tasks:
+    - user: name="{{ item  }}" state: present
+      with_items:
+        - joe
+        - nick
+        - tean
+        - mike
+        - paul
+```
+
+It's recommended to use the lopp directive. With is an older directive that has a lot of variants.
+
+
