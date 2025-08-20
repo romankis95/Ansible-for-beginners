@@ -630,7 +630,7 @@ Another way to create loops is using the `with` keyword:
 
 It's recommended to use the lopp directive. With is an older directive that has a lot of variants.
 
-## Laboratory 6
+### Laboratory 6
 
 ```yml
 ---
@@ -663,3 +663,108 @@ It's recommended to use the lopp directive. With is an older directive that has 
         state: present
       with_items: '{{ packages }}'
 ```
+
+### Ansible Modules
+
+Modules in ansible are categorized into various groups based on their functionality. For example:
+- System
+- Commands
+- Files
+- Database
+- Cloud
+- Windows
+
+`System` modules are the one that can perform actions at system level, such as modifying the users, creating groups, editing ip tables, mouting volumes etc. The `commands` module is the one that allows us to run scripts or execute complex scripts on the hosts. `File` modules allows us to work with files, setting permisions such as ACL information. Archive files, replacing files etc.
+`Database` modules help us working with databases such as mysql, mongodb, postgress.  `Cloud` modules help you to deploy resources to the cloud. The official ansible documentation provides useful information for each of the modules that we talked about and many more. 
+
+Let's dig deeper with the `command` module: The command module is used to execute commands on the remote hosts. At the following url [Command Module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/command_module.html) we can find the official documentation for the command module. Let's write a simple playbook and start from there:
+
+
+```yml
+---
+-  name: 'Execute commands on localhost'
+   hosts: localhost
+   tasks:
+      - name: Execute command 1
+        command: 'date'
+      - name: Execute command 2
+        command: 'cat /etc/resolv.conf'
+      - name: Execute command 3
+        command: 'cat resolv.conf chdir=/etc'
+      - name: Execute command 4
+        command: 'mkdir /test creats=/test'   
+```
+
+This playbook runs different commands on the localhost machine. 
+
+The difference betweek the task 2 and 3 is that we used `chdir` parameter to be sure that andible changes the directory to `etc`. This is how parameters are passed to the official `command` module. The forth tasks ensures that a folder is not created if it's already present. 
+
+
+Another module to look at is the `script` module. The script module allow us to run a script on the remote host after transferring it from the local ansible controller machine. 
+
+A simple script module playbook look like this:
+
+```yml
+---
+-  name: 'Play 1'
+   hosts: node01
+   tasks:
+      - name: Run a script on the remote server
+        script: /some/local/script.sh -arg1 -arg2 
+```
+
+Now let's take a look a the `service` module. The service module is used to maintain services in the desired state (started, active, stopped, restarting). The following ansible playbooks is used to start a variety of services:
+
+```yml
+---
+-  name: 'Play 1'
+   hosts: node01
+   tasks:
+      - name: Start the database service
+        service: name=postresql state=started
+      - name: Start the htppd service
+        service: name=httpd state=started
+      - name: Start the nginx service
+        service: name=nginx state=started
+```
+
+As you can see using the `service` module we passed 2 parameters: name and the desired state of that module. 
+
+We can also write the same playbook as follows:
+
+```yml
+---
+-  name: 'Play 1'
+   hosts: node01
+   tasks:
+      - name: Start the database service
+        service:
+          name: postresql
+          state: started
+          name: httpd
+          state: started
+          name: nginx
+          state: started
+```
+
+Which to be honest i prefer. But why the action (state) is `started` and not `start`? 
+If we were tasked to tell ansible to start a service named httpd we would say: `start the server httpd`. We are not instructing ansible to start a service, we are asking ansible to ensure that the httpd service is in the started state. 
+If the service is already started, ansible should do nothing. This is colled `idempotency` and is is the core of all the ansible concept. As per the ansible documentation: **An operation is idempotent if the result of performing it once is exactly the same result as of performing it repetetly without any intervening actions**. Unfortunately not all the modules or commands are idempotent so be careful when reading the documentation regarding modules and actions. 
+
+Finally lets look at the `lineinfile` module. This modules is used to look for a line in a file. Useful to check if `hosts` file is well populated etc.
+
+```yaml
+---
+- name: Add dns server entry 
+  hosts: localhost
+  tasks:
+    - lineinfile:
+        path: /etc/resolv.conf
+        line: 'nameserver 10.1.250.10'
+```
+
+The `lineinfile` module is idempotent, that means if we run the playbook on the same host 1000 times, it will add the entry only once. 
+
+
+
+
