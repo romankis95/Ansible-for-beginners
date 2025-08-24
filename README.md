@@ -847,3 +847,33 @@ For example if we needed a custom inventory of a proxmox pve cluster we could in
         uid: 1040
         group: 'developers'
 ```
+
+### Ansible Handlers
+
+Imagine you are managing a web server infrastructure with multiple servers. You freequently make changes to the web servers configuration to tweak the settings. However, modifying the config file does not apply the changes. To ensure the changes are applied you need to restart the web server service. 
+In this scenario, you have to manualy execute a task that restarts the web server service after every configuration update. 
+What happens if you forget to do it or something wents wrong?
+To ensure everything works properly ansible introduced handlers. With handlers we can define an action to restart the web service and associate it with a task that modifies the configuration file. 
+This creates a dependency between the task and the handler. 
+Now everytime we modify the config file, an associated handler is triggered. 
+
+Handlers in ansible are special tasks associated with events or notifications. They are tipicly defined in a playbook and executed only when triggered by a task.
+Handlers enables you to manage actions that depends on a state or configuration changes on your system. 
+
+```yaml
+---
+- name: 'Deploy Application'
+  hosts: application_1_servers
+  tasks:
+    - name: Copy code
+      copy:
+        src: app_code/
+        dest: /opt/webapp1
+      notify: Restart application service
+  
+  handlers:
+    - name: Restart application service
+      service: application_service
+      state: restarted
+```
+
