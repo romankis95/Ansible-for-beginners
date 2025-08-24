@@ -765,6 +765,20 @@ Finally lets look at the `lineinfile` module. This modules is used to look for a
 
 The `lineinfile` module is idempotent, that means if we run the playbook on the same host 1000 times, it will add the entry only once. 
 
+### Ansible Plugins
+
+Let's consider you have a complex infrastructure with multiple sites. Every site has virtual machines, load balancers, DBs spread accross different regions. Our goal is to automate the provisioning and configuration of these resources using Ansible.
+
+While ansible provides a rich set of built-in modules and features, we soon realize that we need other functions, for example: an automatic inventory solution that can dynamicly fetch real time information from our cloud (instances, security groups, tags, etc).
+
+But as we know the static inventory file is not enough in managing a dynamic cloud infrastructure. We could also use ansible to dynamicly configurate load balancers, ssl certificates etc. 
+
+To address these challenges you can leverage ansible plugins which provide extensibility and customization options. 
+In ansible a plugin is a piece of code that extends or modifies the functionality of ansible. Plugins can be used to enhance various functionalities of ansible (inventories, modules, callbacks). They provide a flexible way to customize our workflow. 
+Each plugin type serves a specific purpose and offers unique capabilities for extending ansible functionalities. 
+
+For example if we needed a custom inventory of a proxmox pve cluster we could install this module instead of writing all the logic alone: [Proxmox Plugin](https://docs.ansible.com/ansible/latest/collections/community/general/proxmox_inventory.html)
+
 
 
 
