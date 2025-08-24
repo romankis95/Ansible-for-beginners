@@ -877,3 +877,80 @@ Handlers enables you to manage actions that depends on a state or configuration 
       state: restarted
 ```
 
+### Ansible Roles
+
+Roles are assigned to servers as jobs are assigned to people. Assigning a role to a server means performing all the tasks that are needed to make a server suitable for the desired role. 
+For example do what is needed to make a server a database server. Installing dependencies, database, monitors, alerts etc.
+
+But why we need roles when we could do:
+
+```yaml
+---
+- name: Prepare a DB server
+  hosts: db-server
+  tasks:
+    - yum:
+      - name: pre-req-packages
+        state: present
+      - name: mysql
+        state: present
+    - service:
+      - name: mysql
+        state: started
+    - mysql_db:
+      - name: db1
+        state: present
+```
+
+Once it's getting perfectionzied it can be used by hundreds of people that needs to install mysql. 
+
+We can split the above playbook as follows.
+
+
+```yaml
+---
+- name: Prepare a DB server
+  hosts: db-server
+  roles:
+    - mysql
+```
+
+```yaml
+---
+  tasks:
+    - yum:
+      - name: pre-req-packages
+        state: present
+      - name: mysql
+        state: present
+    - service:
+      - name: mysql
+        state: started
+    - mysql_db:
+      - name: db1
+        state: present
+```
+
+Thats how we created a Role. The primary scope of roles is to make your work reusable.
+
+Roles introduced a set of best practices that must be followed before creating a role:
+- all tasks goes into the `tasks` directory
+- all defaults goes into the `defaults` directory
+- all vars goes into the `vars` directory
+- all handlers goes into the `handlers` directory
+- all templates goes into the `templates` directory
+
+Ansible galaxy is a community tool that contains roles almost for everything. 
+
+Using `ansible-galaxy init <rolename>` command will create a structure ready to go for your role.
+
+But how my playbook finds the role i specify? Well we could put in the same folder:
+
+```sh
+playbook.yml
+roles/rolename
+```
+
+Or move the roles in a common directory at the `/etc/ansible/roles` location. This location can be changed in the ansible configuration file. 
+
+After finding a role we can install it using `ansible-galaxy install rolename` or to view the currently installed roles by running `ansible-galaxy list` command. 
