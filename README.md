@@ -166,7 +166,7 @@ web3 ansible_host=server3.company.com ansible_connection=ssh ansible_user=root a
 # Database Servers
 db1 ansible_host=server4.company.com ansible_connection=winrm ansible_user=administrator ansible_password=Password123!
 
-
+#web servers
 [web_servers]
 web1
 web2
@@ -178,7 +178,6 @@ db1
 [all_servers:children]
 web_servers
 db_servers
-
 ```
 
 ### Ansible variables
@@ -985,3 +984,43 @@ Collections can be created by ansible by vendors or everyone else.
 
 Ansible uses Jinja2 templates. Jinja2 is fully featured templating engine for python. 
 Please refer to [Jinja2 official documentation](https://jinja.palletsprojects.com/en/stable/)
+We can take variables from our inventories:
+```ini
+# Web Servers
+web1 ansible_host=server1.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Password123!
+web2 ansible_host=server2.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Password123!
+web3 ansible_host=server3.company.com ansible_connection=ssh ansible_user=root ansible_ssh_pass=Password123!
+```
+
+```yaml
+---
+- name: Update user password
+  host: all
+  tasks:
+    - name: upd user
+      user: user pass '{{ ansible_ssh_pass }}'
+```
+
+Let's make a more complex example. What if i had a index.html file what has a jinja2 template variable?
+
+```html
+<!DOCTYPE html>
+<html>
+  <body>
+    This page is on host: {{ inventory_hostname }}
+    </body>
+</html>
+```
+
+```yaml
+---
+hosts: web_servers
+tasks: 
+  - name: Copy index.html to remote servers
+    template: 
+      src: index.html.j2
+      dest: /var/www/nginx/index.html
+```
+
+Ansible will create index.html copies before delivering the file to the remote server. 
+
