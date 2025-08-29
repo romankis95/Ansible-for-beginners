@@ -954,3 +954,14 @@ roles/rolename
 Or move the roles in a common directory at the `/etc/ansible/roles` location. This location can be changed in the ansible configuration file. 
 
 After finding a role we can install it using `ansible-galaxy install rolename` or to view the currently installed roles by running `ansible-galaxy list` command. 
+
+### Ansible Collections
+
+Let's consider a scenario. You work as a network engineer, responsible for managing a large network infrastructure. You need to automate and manage the configuration of network devices from various vendors. 
+Ansible provides a set of built in modules for network automation. Ansible provides a big collections of ready to go integrations such as `network.cisco`, `network.arista` etc. These are vendor specific modules that provides playbook for managing specific devices.  
+By installing these collections you get access to specialized functionalities required to automate the network infrastructure. 
+Here is an example command on how to install a collection: `ansible-galaxy collection install network.cisco`.
+
+But what are ansible collections? Ansible collections are a way to package and distribute ansible modules, roles, plugins, etc. A collection is a self-contained unit that encapsulate this components making them easily accessible and shareble. 
+
+Collections can be created by ansible by vendors or everyone else. 
