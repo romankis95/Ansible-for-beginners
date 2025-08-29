@@ -1024,3 +1024,60 @@ tasks:
 
 Ansible will create index.html copies before delivering the file to the remote server. 
 
+
+### Laboratory 9
+
+```yml
+---
+- hosts: localhost
+  connection: local
+  vars:
+    dialogue: "The name is Bourne, James Bourne!"
+  tasks:
+    - template:
+        src: name.txt.j2
+        dest: /tmp/name.txt
+```
+
+```yml
+{{ dialogue | replace('Bourne', 'Bond') }}
+```
+-----------------------
+
+```yaml
+hostname, ipaddress, monitor_port, type, protocol
+{% for host in groups['lamp_app'] %}
+{{ host }}, {{ hostvars[host]['ansible_host'] }}, {{ hostvars[host]['monitor_port'] }}, {{ hostvars[host]['protocol'] }}
+{% endfor %}
+```
+
+```yaml
+---
+- hosts: monitoring_server
+  become: yes
+  tasks:
+    - template:
+        src: agents.conf.j2
+        dest: /etc/agents.conf
+```
+------------------------
+
+```yaml
+hostname, architecture, distribution_version, mem_total_mb, processor_cores, processor_count
+{% for host in groups['web'] %}
+{{ host }}, {{ hostvars[host]['ansible_architecture'] }}, {{ hostvars[host]['ansible_distribution_version'] }}, {{ hostvars[host]['ansible_memtotal_mb'] }}, {{ hostvars[host]['ansible_processor_cores'] }}, {{ hostvars[host]['ansible_processor_count'] }}
+{% endfor %}
+```
+
+```yaml
+- hosts: all
+  tasks:
+  - setup:
+
+- hosts: localhost
+  tasks:
+    - template:
+        src: inventory.csv.j2
+        dest: /tmp/inventory.csv
+      run_once: yes
+```
