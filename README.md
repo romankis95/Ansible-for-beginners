@@ -980,3 +980,8 @@ Collections can be created by ansible by vendors or everyone else.
         vlan_id: 10
         vlan_name: Admin_VLAN
 ```
+
+### Ansible Introduction to templating 
+
+Ansible uses Jinja2 templates. Jinja2 is fully featured templating engine for python. 
+Please refer to [Jinja2 official documentation](https://jinja.palletsprojects.com/en/stable/)
