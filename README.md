@@ -1081,3 +1081,185 @@ hostname, architecture, distribution_version, mem_total_mb, processor_cores, pro
         dest: /tmp/inventory.csv
       run_once: yes
 ```
+
+### Final exam
+
+```yaml
+---
+- hosts: node01
+  become: true
+  tasks:
+    - name: Creating blog.txt file
+      file:
+        path: /opt/news/blog.txt
+        state: touch
+        group: sam
+
+- hosts: node02
+  become: true
+  tasks:
+    - name: Creating story.txt file
+      file:
+        path: /opt/news/story.txt
+        state: touch
+        owner: sam
+```
+-------------------
+```yml
+---
+- hosts: node01
+  become: true
+  tasks:
+    - name: create a file
+      copy:
+        dest: /opt/file.txt
+        content: "This file is created by Ansible!"
+```
+-------------------
+```yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - copy:
+        src:  /usr/src/blog/index.html
+        dest: /opt/blog
+        remote_src: yes
+```
+-------------------
+```yml
+---
+- hosts: node01
+  become: true
+  tasks:
+    - replace:
+        path: /opt/music/blog.txt
+        regexp: 'Kodekloud'
+        replace: 'Ansible'
+
+- hosts: node02
+  become: true
+  tasks:
+    - replace:
+        path: /opt/music/story.txt
+        regexp: 'Ansible'
+        replace: 'Kodekloud'
+```
+
+
+-------------------
+```yml
+---
+- name: 'Am I a Banana or not?'
+  hosts: localhost
+  connection: local
+  vars:
+    fruit: banana
+  tasks:
+    - command: 'echo "I am a Banana"'
+      when: fruit == "banana"
+
+    - command: 'echo "I am not a Banana"'
+      when: fruit != "banana"
+```
+
+
+-------------------
+```yml
+---
+- name: 'Print fruits'
+  hosts: localhost
+  connection: local
+  vars:
+    fruits:
+      - Apple
+      - Banana
+      - Grapes
+      - Orange
+  tasks:
+    - command: 'echo "{{ item }}"'
+      with_items: '{{ fruits }}'
+```
+
+
+-------------------
+```yml
+---
+- name: 'Install the required package'
+  hosts: localhost
+  become: yes
+  connection: local
+  tasks:
+    - yum: 
+        name: vim-enhanced
+        state: present
+```
+
+-------------------
+```yml
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: Copy file with owner and permissions on node01
+      copy:
+        src: /usr/src/condition/blog.txt
+        dest: /opt/condition/blog.txt
+        owner: bob
+        group: bob
+        mode: "0640"
+      when: inventory_hostname == "node01"
+
+    - name: Copy file with owner and permissions on node02
+      copy:
+        src: /usr/src/condition/story.txt
+        dest: /opt/condition/story.txt
+        owner: sam
+        group: sam
+        mode: "0400"
+      when: inventory_hostname == "node02"
+```
+
+
+-------------------
+```yml
+---
+- hosts: node01
+  become: true
+  tasks:
+  - lineinfile:
+      path: /var/www/html/index.html
+      line: 'Welcome to KodeKloud Labs!'
+      state: present
+      insertbefore: BOF
+```
+
+
+-------------------
+```yml
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: Install httpd package
+    yum: name=vsftpd state=installed
+
+  - name: Start service
+    service:
+      name: vsftpd
+      state: started
+```
+
+
+-------------------
+```yml
+---
+- hosts: all
+  become: true
+  tasks:
+  - name: Create an archive demo.tar.gz
+    archive:
+      path: /usr/src/ecommerce/
+      dest: /opt/ecommerce/demo.tar.gz
+```
+
