@@ -876,6 +876,7 @@ Handlers enables you to manage actions that depends on a state or configuration 
       service: application_service
       state: restarted
 ```
+If the same handler is requested multiple times in the same playbook it will be executed only once at the end. 
 
 ### Ansible Roles
 
@@ -960,8 +961,22 @@ After finding a role we can install it using `ansible-galaxy install rolename` o
 Let's consider a scenario. You work as a network engineer, responsible for managing a large network infrastructure. You need to automate and manage the configuration of network devices from various vendors. 
 Ansible provides a set of built in modules for network automation. Ansible provides a big collections of ready to go integrations such as `network.cisco`, `network.arista` etc. These are vendor specific modules that provides playbook for managing specific devices.  
 By installing these collections you get access to specialized functionalities required to automate the network infrastructure. 
-Here is an example command on how to install a collection: `ansible-galaxy collection install network.cisco`.
+Here is an example command on how to install a collection: `ansible-galaxy collection install network.cisco`, or if you have a requirements file with: `ansible-galaxy collection install -r requirements.yml`.
 
 But what are ansible collections? Ansible collections are a way to package and distribute ansible modules, roles, plugins, etc. A collection is a self-contained unit that encapsulate this components making them easily accessible and shareble. 
 
 Collections can be created by ansible by vendors or everyone else. 
+
+### Laboratory 8
+
+```yaml
+---
+- hosts: switches
+  collections:
+    - company_xyz.networking_tools
+  tasks:
+    - name: Configure VLAN 10
+      configure_vlan:
+        vlan_id: 10
+        vlan_name: Admin_VLAN
+```
