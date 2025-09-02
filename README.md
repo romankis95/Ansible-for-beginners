@@ -1,6 +1,9 @@
-# Ansible for beginners
+# Ansible for beginners extended with advanced topics
 
-My journey into learning ansible for automation. 
+My journey into learning ansible for automation with basic and real life use cases. 
+Advanced concepts will be added in the notes and will be tagged properly. 
+
+PS: all the passwords, ssh keys and other sensible information are fake.
 
 ## Objectives
 
@@ -505,6 +508,7 @@ How to run ansible lint on this playbook? What are the erros shows after running
       notify:
         - Restart PostgreSQL
 ```
+
 ### Ansible Conditionals
 
 In this chapter we will look into conditionals. Let's start with a simple example:
@@ -1263,3 +1267,103 @@ hostname, architecture, distribution_version, mem_total_mb, processor_cores, pro
       dest: /opt/ecommerce/demo.tar.gz
 ```
 
+## Advanced lessons
+
+### Web Application
+
+We are going to focus on this lesson on how to deploy a basic web application using Ansible. 
+I'll skip all the basic concepts on how a web app works. I'll just focus on it's components and how to deploy them. 
+
+We are going to perform the following steps on a web server:
+- install python and some libraries
+- install mysql db, configure it and start the service
+- install flask 
+- update the code on server
+- start the web server
+
+```yml
+---
+- name: Deploy web application
+  hosts: webserver1_and_dbserver1
+  tasks:
+    - name: Install dependencies
+    - name: Install mysql db
+    - name: Start mysql db
+    - name: Crate application database
+    - name: Create application db user
+    - name: Install Flask dependencies
+    - name: Copy the webserver code
+    - name: Run webserver
+```
+Now we have to add actual tasks to this playbook. The following inventory entry `webserver1_and_dbserver1` has been defined in the inventory file as follows:
+
+```ini
+[webserver1_and_dbserver1]
+webserver1 ansible_host=192.168.20.10 ansible_user=ansible ansible_ssh_password=redacted
+dbserver1 ansible_host=192.168.20.12 ansible_user=ansible ansible_ssh_password=redacted
+```
+
+```yml
+---
+-
+  name: Deploy a web application
+  hosts: db_and_web_server
+  vars:
+    db_name: employee_db
+    db_user: db_user
+    db_password: Passw0rd
+  tasks:
+    - name: Install dependencies
+      apt: name={{ item }} state=present
+      with_items:
+       - python
+       - python-setuptools
+       - python-dev
+       - build-essential
+       - python-pip
+       - python-mysqldb
+
+    - name: Install MySQL database
+      apt:
+        name: "{{ item }}"
+        state:  present
+      with_items:
+       - mysql-server
+       - mysql-client
+
+    - name: Start Mysql Service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Create Application Database
+      mysql_db: 
+        name: {{ db_name }} 
+        state: present
+
+    - name: Create Application DB User
+      mysql_user: 
+        name: {{ db_user }} 
+        password: {{ db_password }} 
+        priv: '*.*:ALL' 
+        host: '%' 
+        state: 'present'
+
+    - name: Install Python Flask dependencies
+      pip:
+        name: '{{ item }}'
+        state: present
+      with_items:
+       - flask
+       - flask-mysql
+
+    - name: Copy web-server code
+      copy: 
+        src: app.py 
+        dest: /opt/app.py
+
+    - name: Start web-application
+      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+
+```
