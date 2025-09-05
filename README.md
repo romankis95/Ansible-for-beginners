@@ -1367,3 +1367,124 @@ dbserver1 ansible_host=192.168.20.12 ansible_user=ansible ansible_ssh_password=r
       shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
 
 ```
+
+
+### File Separation
+
+So far we have been defining variables in the inventory file, but this is not the best practice. To define correctly a variable, first create a `host_vars` folder and inside create a yaml file with the same name as the host defined inside the inventory file. 
+Example: `host_vars\db_and_we_server.yml`. Ansible will automatically read the content of the file when executing a playbook. 
+
+To define a variable for a group we should create a folder named `group_vars`.
+
+To separate better the playbook we can split the previous one in 3 files as follows:
+
+```yml
+---
+# playbook
+-
+  name: Deploy a web application
+  hosts: db_and_web_server
+  vars:
+    db_name: employee_db
+    db_user: db_user
+    db_password: Passw0rd
+  tasks:
+    - include tasks/deploy_db.yml
+    - include tasks/deploy_web.yml
+```
+
+```yml
+---
+-
+# tasks/deploy_db.yml
+    - name: Install dependencies
+      apt: name={{ item }} state=present
+      with_items:
+       - python
+       - python-setuptools
+       - python-dev
+       - build-essential
+       - python-pip
+       - python-mysqldb
+
+    - name: Install MySQL database
+      apt:
+        name: "{{ item }}"
+        state:  present
+      with_items:
+       - mysql-server
+       - mysql-client
+
+    - name: Start Mysql Service
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Create Application Database
+      mysql_db: 
+        name: {{ db_name }} 
+        state: present
+```
+
+
+```yml
+---
+# tasks/deploy_web.yml
+    - name: Install Python Flask dependencies
+      pip:
+        name: '{{ item }}'
+        state: present
+      with_items:
+       - flask
+       - flask-mysql
+
+    - name: Copy web-server code
+      copy: 
+        src: app.py 
+        dest: /opt/app.py
+
+    - name: Start web-application
+      shell: FLASK_APP=/opt/app.py nohup flask run --host=0.0.0.0 &
+```
+
+We have split the tasks in 2 separate files under the `tasks` folder and reused them inside the playbook using the `include` statement. That means if we needed to reuse the tasks to deploy a db in another playbook we could do it very easily.
+
+But let's improve it moving out the variables, separating into files etc. Ok let's take one more time the playbook we've created above and export the vars section to a dedicated file. 
+
+```yml
+---
+# playbook.yml
+-
+  name: Deploy a web application
+  hosts: db_and_web_server
+  tasks:
+    - include: tasks/deploy_db.yml
+    - include: tasks/deploy_web.yml
+```
+
+```yml
+
+---
+# group_vars/webserver1_and_dbserver1.yml
+db_name: employee_db
+db_user: db_user
+db_password: Passw0rd
+```
+
+```ini
+#intentory
+[webserver1_and_dbserver1]
+webserver1 ansible_host=192.168.20.10 ansible_user=ansible ansible_ssh_password=redacted
+dbserver1 ansible_host=192.168.20.12 ansible_user=ansible ansible_ssh_password=redacted
+```
+
+This is how our local folder looks like.
+```bash
+$ ls -l
+-rw-r--r--  1 ansible ansible   142 Sep  5 10:32 playbook.yml
+-rw-r--r--  1 ansible ansible   221 Sep  5 10:34 inventory
+-rw-r--r--  1 ansible ansible    94 Sep  5 10:33 group_vars/webserver1_and_dbserver1.yml
+-rw-r--r--  1 ansible ansible   460 Sep  5 10:33 tasks/deploy_db.yml
+-rw-r--r--  1 ansible ansible   191 Sep  5 10:33 tasks/deploy_web.yml
+```
