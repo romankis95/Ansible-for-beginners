@@ -853,14 +853,14 @@ For example if we needed a custom inventory of a proxmox pve cluster we could in
 
 ### Ansible Handlers
 
-Imagine you are managing a web server infrastructure with multiple servers. You freequently make changes to the web servers configuration to tweak the settings. However, modifying the config file does not apply the changes. To ensure the changes are applied you need to restart the web server service. 
-In this scenario, you have to manualy execute a task that restarts the web server service after every configuration update. 
-What happens if you forget to do it or something wents wrong?
+Imagine you are managing a web server infrastructure with multiple servers. You frequently make changes to the web servers configuration to tweak the settings. However, modifying the config file does not apply the changes. To ensure the changes are applied you need to restart the web server service. 
+In this scenario, you have to manually execute a task that restarts the web server service after every configuration update. 
+What happens if you forget to do it or something went wrong?
 To ensure everything works properly ansible introduced handlers. With handlers we can define an action to restart the web service and associate it with a task that modifies the configuration file. 
 This creates a dependency between the task and the handler. 
-Now everytime we modify the config file, an associated handler is triggered. 
+Now every time we modify the config file, an associated handler is triggered. 
 
-Handlers in ansible are special tasks associated with events or notifications. They are tipicly defined in a playbook and executed only when triggered by a task.
+Handlers in ansible are special tasks associated with events or notifications. They are usually defined in a playbook and executed only when triggered by a task.
 Handlers enables you to manage actions that depends on a state or configuration changes on your system. 
 
 ```yaml
@@ -906,7 +906,7 @@ But why we need roles when we could do:
         state: present
 ```
 
-Once it's getting perfectionzied it can be used by hundreds of people that needs to install mysql. 
+Once it's getting more stable it can be used by hundreds of people that needs to install mysql. 
 
 We can split the above playbook as follows.
 
@@ -1487,4 +1487,47 @@ $ ls -l
 -rw-r--r--  1 ansible ansible    94 Sep  5 10:33 group_vars/webserver1_and_dbserver1.yml
 -rw-r--r--  1 ansible ansible   460 Sep  5 10:33 tasks/deploy_db.yml
 -rw-r--r--  1 ansible ansible   191 Sep  5 10:33 tasks/deploy_web.yml
+```
+
+### Ansible Advanced Roles
+
+Now that we are familiar with include statement we can dive deeper into roles. 
+Roles are the recommended way to manage and organize an ansible playbook. When we run `ansible-galaxy init rolename` we receive the following ready to go folder structure:
+
+```bash
+-rw-r--r-- 1 user user  322 Sep  6 12:00 README.md
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 defaults
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 files
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 handlers
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 meta
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 tasks
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 templates
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 tests
+drwxr-xr-x 2 user user 4096 Sep  6 12:00 vars
+```
+
+That menas if you import the "rolename" role into a playbook you can just write:
+
+```yml
+roles:
+- rolename
+```
+
+And it will be imported. No nned to use `include` command when working with roles. Btw it's a good practice to look if the role we need is already available online and import it with `ansible-galaxy import rolename`.
+
+Let's edit one more time the plugin we wrote earlier. We can split the playbook in the following roles:
+- `ansible-galaxy init mysql_db`
+- `ansible-galaxy init flask_web`
+
+Once the roles are created and the tasks moved we can just have the following playbook:
+
+```yml
+---
+# playbook.yml
+-
+  name: Deploy a web application
+  hosts: db_and_web_server
+  roles:
+    - mysql_db
+    - flask_web
 ```
