@@ -1395,7 +1395,6 @@ To separate better the playbook we can split the previous one in 3 files as foll
 
 ```yml
 ---
--
 # tasks/deploy_db.yml
     - name: Install dependencies
       apt: name={{ item }} state=present
@@ -1531,3 +1530,8 @@ Once the roles are created and the tasks moved we can just have the following pl
     - mysql_db
     - flask_web
 ```
+### Laboratory 10
+
+
+
+The detailed output of this lab can be found in the lab10 folder

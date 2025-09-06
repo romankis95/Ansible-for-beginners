@@ -1,0 +1,10 @@
+---
+- name: Deploy a web application
+  hosts: db_and_web_server
+  tasks:
+   # - ansible.builtin.include_tasks: ./tasks/deploy_db.yml
+   # - ansible.builtin.include_tasks: ./tasks/deploy_web.yml
+  roles:
+    - python_deps
+    - mysql_db
+    - flask_web
